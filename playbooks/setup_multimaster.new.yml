@@ -4,9 +4,9 @@
   tasks:
 #    - name: "Destroy Azure Deploy  Resource group {{ resource_group_name }}"
 #      azure_rm_deployment:
- #       state: absent
- #       subscription_id: "{{ subscriptionID }}"
- #       resource_group_name: "{{ resource_group_name }}"
+#       state: absent
+#       subscription_id: "{{ subscriptionID }}"
+#       resource_group_name: "{{ resource_group_name }}"
 #        location: "{{ region }}"
 ################################################
 ####  Create basic infra components
@@ -20,13 +20,13 @@
         subscription_id: "{{ subscriptionID }}"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra.json'
-        location: "{{ region }}" 
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/infra.json'
+        location: "{{ region }}"
       register: azure_vm
-      
-      
+
+
 ################################################
-####  Create basic humphost node, this exposes 8443 and 22 as a public ports on a public ip , in future this will be a jump host and also entry point for the masters 
+####  Create basic humphost node, this exposes 8443 and 22 as a public ports on a public ip , in future this will be a jump host and also entry point for the masters
 ###   we use this node to jump into the other nodes
 ################################################
     - name: Create Jumphost Deployment
@@ -39,8 +39,8 @@
         state: present
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        location: "{{ region }}" 
-        #### We add it to the master subnet but really don't matter 
+        location: "{{ region }}"
+        #### We add it to the master subnet but really don't matter
         deployment_name: "{{ item.value.name }}"
         parameters:
           image:
@@ -63,7 +63,7 @@
             value: "{{ item.value.tags }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/master.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/master.json'
       register: azure_async
       async: 7200
       poll: 0
@@ -73,7 +73,6 @@
       until: azure.finished
       retries: 320
       with_items: "{{ azure_async.results }}"
-
 
     - debug: msg="the value of azure  {{ azure }}"
     - debug: msg="the value of azure_async {{ azure_async }}"
@@ -104,7 +103,7 @@
         line: "publicjumpip: {{ publicjumpip }}"
       ignore_errors: yes
 
-    
+
 
 ################################################
 ####  Adding the jump host to our local know hosts
@@ -148,7 +147,7 @@
   user: "{{ adminUsername }}"
   sudo: true
   roles:
-     - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
+     - { role: subscribe, rhnuser: "{{ rh_subscription_user }}", rhnpassword: "{{ rh_subscription_pass }}", pool: "{{ openshift_pool_id }}" }
   tasks:
     - name: Install Basic Preqes
       yum:
@@ -224,7 +223,7 @@
             value: "{{ item.value.name }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/nodes.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
 
@@ -244,7 +243,7 @@
         state: present
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        location: "{{ region }}" 
+        location: "{{ region }}"
         deployment_name: "{{ item.value.name }}"
         parameters:
           subnetName:
@@ -267,8 +266,8 @@
             value: "{{ item.value.name }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode.json'
-        #i#template_link: 'ansible-azure/nodes.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/infranode.json'
+        ##template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
 ################################################
 #### Creating the application nodes.
@@ -286,7 +285,7 @@
         state: present
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        location: "{{ region }}" 
+        location: "{{ region }}"
         deployment_name: "{{ item.value.name }}"
         parameters:
           subnetName:
@@ -309,12 +308,12 @@
             value: "{{ item.value.name }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/nodes.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes_async
 
 
-### wait for masters 
+### wait for masters
     - name: Wait for master instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azuremasternodes
@@ -322,7 +321,7 @@
       retries: 900
       with_items: "{{ azuremasternodes_sync.results }}"
 
-## wait for infra nodes 
+## wait for infra nodes
     - name: Wait for infranode instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azureinfranodes
@@ -333,7 +332,7 @@
         routerpublicip: "{{ azureinfranodes.results[0].deployment.instances[0].ips[0].public_ip }}"
     - debug: msg="the value of azure  {{ azure }}"
     - debug: msg="the value of ip  {{ routerpublicip }}"
-## wait for  normal nodes 
+## wait for  normal nodes
     - name: Wait for node instance creation to complete
       async_status: jid={{ item.ansible_job_id }}
       register: azurenodes
@@ -465,7 +464,7 @@
   tasks:
       - debug : msg=" {{ ansible_ssh_common_args }} "
   roles:
-    - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
+    - { role: subscribe, rhnuser: "{{ rh_subscription_user }}", rhnpassword: "{{ rh_subscription_pass }}", pool: "{{ openshift_pool_id }}" }
 
 #################################################
  #### Heres the real business. Preparing only master. Via jump host
@@ -555,7 +554,7 @@
  #### Heres the real business. Preparing nodes(including infra).  See prereqs_azure for details. Via jump host
 ################################################
 - hosts: gatewayed-masters:gatewayed-nodes
-  name: setup docker on all masters and nodes 
+  name: setup docker on all masters and nodes
   gather_facts: False
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
@@ -589,7 +588,7 @@
 - hosts: azure_vms
   gather_facts: False
   user: "{{ adminUsername }}"
- # sudo: true  
+ # sudo: true
   force_handlers: yes
   vars:
     publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
@@ -641,9 +640,9 @@
 #      until: resultmaster.stdout.find("ok") != -1
 #      retries: 10
 #      delay: 3
- 
 
- 
+
+
 
 - hosts: gatewayed-masters
   name: restart masters after ose install
@@ -659,7 +658,7 @@
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
     lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
   tasks:
- 
+
     - service: name=atomic-openshift-master-controllers state=restarted
     - service: name=atomic-openshift-master-api state=restarted
 #    - command: curl  --insecure --silent https://localhost:8443/healthz/ready
@@ -686,11 +685,11 @@
     - service: name=docker  state=restarted
 - hosts: localhost
   connection: local
-  name: waiting 2 mins for nodes to come back 
-  tasks: 
+  name: waiting 2 mins for nodes to come back
+  tasks:
     - command: "sleep 120"
 #- hosts: gatewayed-masters
-- hosts: gatewayed-masters[0] 
+- hosts: gatewayed-masters[0]
   name: postinstall
   user: "{{ adminUsername }}"
   sudo: true
@@ -702,7 +701,7 @@
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
     lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
     routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
-  roles: 
+  roles:
      - { role: postinstall }
 
 - hosts: gatewayed-masters[0]
@@ -717,7 +716,7 @@
     ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
     lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
     routerpublicip: "{{ hostvars['localhost']['routerpublicip']}}"
-  roles: 
+  roles:
      - { role: metrics,run_once: true, image_version: "latest", master_url: "https://{{ publicjumpdns }}:8443", hawkular_metrics_hostname: "hawkular.apps.{{ routerpublicip }}.xip.io", persistent: "false" }
      - { role: logging,run_once: true, master_url: "https://{{ publicjumpdns }}:8443", kibana_hostname: "kibana.apps.{{ routerpublicip }}.xip.io", image_version: "latest", public_master_url: "https://{{ publicjumpdns }}:8443" }
 
@@ -729,14 +728,14 @@
 #  sudo: true
 #  tags:
 #    - postinstall
-#    - restart 
+#    - restart
 #    - restart-master
 #  vars:
 #    publicjumpdns: "{{ hostvars['localhost']['publicjumpdns']}}"
 #    publicjumpip: "{{ hostvars['localhost']['publicjumpip']}}"
 #    ansible_ssh_common_args: -o ProxyCommand="ssh -W %h:%p -q {{ adminUsername }}@{{ publicjumpip }}"
 #    lbvmname: "{{ hostvars['localhost']['lbvmname']}}"
-#  tasks: 
+#  tasks:
 #    - service: name=atomic-openshift-master-controllers state=restarted
 #    - service: name=atomic-openshift-master-api state=restarted
 #
@@ -758,7 +757,7 @@
 #    - service: name=docker  state=restarted
 
 - hosts: localhost
-  connection: local 
+  connection: local
   name: Success message
   tasks:
     - debug: msg="Congrats. Openshift should be now up and running under https://{{ publicjumpdns }}:8443/"
@@ -800,4 +799,3 @@
 #      with_items: azure.deployment.instances
 
 #https://docs.ansible.com/ansible/azure_rm_deployment_module.html
-

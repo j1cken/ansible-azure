@@ -15,7 +15,7 @@
         state: present
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/infra.json'
         location: northeurope
       register: azure_vm
       
@@ -54,7 +54,7 @@
             value: "{{ item.value.tags }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/master.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/master.json'
       register: azure
     - debug: msg="the value of azure  {{ azure }}"
 
@@ -124,7 +124,7 @@
   user: "{{ adminUsername }}"
   sudo: true
   roles:
-     - { role: subscribe, rhnuser: "{{ rh_subcription_user }}", rhnpassword: "{{ rh_subcription_pass }}" }
+     - { role: subscribe, rhnuser: "{{ rh_subscription_user }}", rhnpassword: "{{ rh_subscription_pass }}" }
   tasks:
     - name: Install Basic Preqes
       yum:
@@ -193,7 +193,7 @@
             value: "{{ item.value.name }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/nodes.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes
 
@@ -237,7 +237,7 @@
             value: "{{ item.value.name }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/infranode.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes
     - set_fact:
@@ -285,7 +285,7 @@
             value: "{{ item.value.name }}"
           sshKeyData:
             value: "{{ sshkey }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/nodes.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes
 

@@ -18,7 +18,7 @@
         password: "{{ ad_password }}"
         subscription_id: "{{ subscriptionID }}"
         resource_group_name: "{{ resource_group_name }}"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infra-avail.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/infra-avail.json'
       #  template_link: 'file://Users/imckinle/Projects/openshift/azure-ansible/ansible-azure/infra-avail.json'
 
         location: "{{ region }}"
@@ -90,7 +90,7 @@
           loadBalancerName:
             value: "apiPool"
 
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes-avail.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/nodes-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azuremasternodes_sync
 
@@ -134,7 +134,7 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "infranode-AvailSet"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/infranode-avail.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/infranode-avail.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azureinfranodes_async
 ################################################
@@ -177,7 +177,7 @@
             value: "{{ sshkey }}"
           availabilitySetName:
             value: "node-AvailSet"
-        template_link: 'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/nodes.json'
+        template_link: 'https://raw.githubusercontent.com/j1cken/ansible-azure/master/nodes.json'
         #i#template_link: 'ansible-azure/nodes.json'
       register: azurenodes_async
 

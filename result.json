@@ -185,7 +185,7 @@
           'wait_for_deployment_polling_period': 30,
          
           'template_link':
-          'https://raw.githubusercontent.com/ivanthelad/ansible-azure/master/master.json',
+          'https://raw.githubusercontent.com/j1cken/ansible-azure/master/master.json',
          
           'append_tags': True,
          
